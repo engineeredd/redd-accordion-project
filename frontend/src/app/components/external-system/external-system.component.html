@@ -1,0 +1,111 @@
+<div class="container">
+	<!-- Search Bar -->
+	<div class="search-container">
+		<input
+			type="text"
+			placeholder="Search by Name"
+			[(ngModel)]="searchTerm"
+			(input)="search()"
+			class="search-input"
+		/>
+	</div>
+
+	<!-- Accordion List -->
+	<div *ngFor="let system of externalSystems">
+		<div class="accordion-header" (click)="toggleAccordion(system.id)">
+			<h3>{{ system.name }}</h3>
+			<div class="actions">
+				<button class="icon-button" (click)="copySystem(system, $event)">
+					<i class="fa fa-copy"></i>
+				</button>
+				<button class="icon-button" (click)="deleteSystem(system.id, $event)">
+					<i class="fa fa-trash"></i>
+				</button>
+			</div>
+		</div>
+	
+		<div class="accordion-content" *ngIf="system.isExpanded">
+			<div class="form-group">
+				<label for="baseURL">Base URL:</label>
+				<input id="baseURL" [(ngModel)]="system.baseURL" placeholder="Base URL" />
+			</div>
+			<div class="form-group">
+				<label for="authMethod">Authentication Method:</label>
+				<input id="authMethod" [(ngModel)]="system.authMethod" placeholder="Authentication Method" />
+			</div>
+			<div class="form-group">
+				<label for="key">Key:</label>
+				<input id="key" [(ngModel)]="system.key" placeholder="Key" />
+			</div>
+			<div class="form-group">
+				<label>Authentication Place:</label>
+				<div class="radio-group">
+					<label>
+						<input type="radio" [(ngModel)]="system.authPlace" value="Header" />
+						Header
+					</label>
+					<label>
+						<input type="radio" [(ngModel)]="system.authPlace" value="QueryParameters" />
+						Query Parameters
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="value">Value:</label>
+				<input id="value" [disabled]="true" [(ngModel)]="system.value" placeholder="Value" />
+			</div>
+		</div>
+	</div>	
+
+	<!-- Create New External System Button -->
+	<button class="fancy-button" (click)="openCreateModal()">Create New External System</button>
+
+	<!-- Create Modal -->
+	<div class="modal" *ngIf="isCreateModalOpen">
+		<div class="modal-content">
+			<h2>Create External System</h2>
+			<form (ngSubmit)="createSystem()">
+				<label>Name:
+					<input type="text" [(ngModel)]="newSystem.name" name="name" required />
+				</label>
+				<label>Base URL:
+					<input type="text" [(ngModel)]="newSystem.baseURL" name="baseURL" required />
+				</label>
+				<label>Authentication Method:
+					<input type="text" [(ngModel)]="newSystem.authMethod" name="authMethod" required />
+				</label>
+				<label>Key:
+					<input type="text" [(ngModel)]="newSystem.key" name="key" required />
+				</label>
+				<label>Value:
+					<input type="text" [(ngModel)]="newSystem.value" name="value" required />
+				</label>
+				<label>Authentication Place:
+					<div>
+						<!-- Radio button for Header -->
+						<label>
+							<input 
+								type="radio" 
+								name="authPlace" 
+								[(ngModel)]="newSystem.authPlace" 
+								value="Header" /> 
+							Header
+						</label>
+						<!-- Radio button for Query Parameters -->
+						<label>
+							<input 
+								type="radio" 
+								name="authPlace" 
+								[(ngModel)]="newSystem.authPlace" 
+								value="QueryParameters" /> 
+							Query Parameters
+						</label>
+					</div>
+				</label>
+				<button type="submit">Create</button>
+				<button (click)="closeCreateModal()">Cancel</button>
+			</form>
+		</div>
+	</div>
+</div>
+  
