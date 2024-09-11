@@ -10,9 +10,9 @@ router.delete('/:id', plannerController.delete);
 router.get('/search', plannerController.search);
 
 // Dropdown data
-router.get('/funds', plannerController.getAllFunds);
-router.get('/sources', plannerController.getAllSources);
-router.get('/runs', plannerController.getAllRuns);
-router.get('/reports', plannerController.getAllReports);
+router.get('/dropdown/funds', plannerController.getAllFunds);
+router.get('/dropdown/sources', plannerController.getAllSources);
+router.get('/dropdown/runs', plannerController.getAllRuns);
+router.get('/dropdown/reports', plannerController.getAllReports);
 
 module.exports = router;

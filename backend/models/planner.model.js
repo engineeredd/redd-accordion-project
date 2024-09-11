@@ -16,38 +16,40 @@ module.exports = (sequelize, DataTypes) => {
     triggerSources: { type: DataTypes.BOOLEAN, defaultValue: false },
     triggerRuns: { type: DataTypes.BOOLEAN, defaultValue: false },
     triggerReports: { type: DataTypes.BOOLEAN, defaultValue: false }
+  }, {
+    tableName: 'Planners' // Explicitly define table name
   });
 
   Planner.associate = function(models) {
     Planner.belongsTo(models.ExternalSystem, { foreignKey: 'externalSystemId', as: 'externalSystemConfig' });
 
-    Planner.belongsToMany(models.Fund, {
-      through: 'PlannerFunds',
-      foreignKey: 'plannerId',
-      otherKey: 'fundId',
-      as: 'funds'
-    });
+    // Planner.belongsToMany(models.Fund, {
+    //   through: 'PlannerFunds',
+    //   foreignKey: 'plannerId',
+    //   otherKey: 'fundId',
+    //   as: 'funds'
+    // });
 
-    Planner.belongsToMany(models.Source, {
-      through: 'PlannerSources',
-      foreignKey: 'plannerId',
-      otherKey: 'sourceId',
-      as: 'sources'
-    });
+    // Planner.belongsToMany(models.Source, {
+    //   through: 'PlannerSources',
+    //   foreignKey: 'plannerId',
+    //   otherKey: 'sourceId',
+    //   as: 'sources'
+    // });
 
-    Planner.belongsToMany(models.Run, {
-      through: 'PlannerRuns',
-      foreignKey: 'plannerId',
-      otherKey: 'runId',
-      as: 'runs'
-    });
+    // Planner.belongsToMany(models.Run, {
+    //   through: 'PlannerRuns',
+    //   foreignKey: 'plannerId',
+    //   otherKey: 'runId',
+    //   as: 'runs'
+    // });
 
-    Planner.belongsToMany(models.Report, {
-      through: 'PlannerReports',
-      foreignKey: 'plannerId',
-      otherKey: 'reportId',
-      as: 'reports'
-    });
+    // Planner.belongsToMany(models.Report, {
+    //   through: 'PlannerReports',
+    //   foreignKey: 'plannerId',
+    //   otherKey: 'reportId',
+    //   as: 'reports'
+    // });
   };
 
   return Planner;

@@ -15,7 +15,13 @@ app.use('/api/planners', plannerRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-	sequelize.sync(); // Ensure database is synced
-  console.log(`Server is running on port ${PORT}`);
-});
+sequelize.sync({ alter: true })
+  .then(() => {
+    console.log('Database synced successfully');
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000');
+    });
+  })
+  .catch(err => {
+    console.error('Error syncing database:', err);
+  });

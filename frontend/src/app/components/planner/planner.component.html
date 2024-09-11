@@ -1,25 +1,144 @@
-<div class="container">
-  <div class="search-container">
-    <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" class="search-input" placeholder="Search planners...">
+<div class="planner-container">
+  <h1>Planners</h1>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Search Planners">
   </div>
 
-  <div class="accordion-container">
-    <div *ngFor="let planner of filteredPlanners" class="accordion-item" [ngClass]="{'expanded': expandedAccordionId === planner.id}">
-      <div class="accordion-header" (click)="toggleAccordion(planner.id)">
-        <span>{{ planner.name }}</span>
-        <span>{{ planner.ownerName }}</span>
-        <span>{{ planner.createdAt | date: 'dd/MM/yyyy HH:mm:ss a' }}</span>
-        <span class="accordion-actions">
-          <!-- <button class="icon-button" (click)="play(planner.id)"><i class="fa fa-play"></i></button>
-          <button class="icon-button" (click)="copy(planner.id)"><i class="fa fa-copy"></i></button> -->
-          <button class="icon-button" (click)="delete(planner.id)"><i class="fa fa-trash"></i></button>
-        </span>
-      </div>
-      <div class="accordion-body" *ngIf="expandedAccordionId === planner.id">
-        <div class="accordion-content">
-          <!-- Detailed planner information here -->
+  <!-- Create New Planner Button -->
+  <button (click)="createNewPlanner()" class="create-btn">Create New Planner</button>
+
+  <!-- Planners List -->
+  <div *ngFor="let planner of filteredPlanners" class="accordion">
+    <div class="accordion-header" (click)="toggleAccordion(planner.id)">
+      <h2>{{ planner.name || 'New Planner' }}</h2>
+      <button class="delete-btn" (click)="delete(planner.id, $event)">Delete</button>
+    </div>
+
+    <div *ngIf="expandedAccordionId === planner.id" class="accordion-body">
+      <form [formGroup]="plannerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input id="name" formControlName="name" placeholder="Planner Name">
         </div>
-      </div>
+
+        <div class="form-group">
+          <label for="ownerName">Owner Name:</label>
+          <input id="ownerName" formControlName="ownerName" placeholder="Owner Name">
+        </div>
+
+        <div class="form-group">
+          <label for="plannerType">Planner Type:</label>
+          <select id="plannerType" formControlName="plannerType">
+            <option value="PlannerType1">PlannerType1</option>
+            <option value="PlannerType2">PlannerType2</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status:</label>
+          <input id="status" formControlName="status" placeholder="Status" [value]="planner.status || ''" disabled>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea id="description" formControlName="description" placeholder="Description"></textarea>
+        </div>
+
+        <!-- External System Config -->
+        <div class="form-group">
+          <label for="externalSystemConfigId">External System Config:</label>
+          <select id="externalSystemConfigId" formControlName="externalSystemConfigId">
+            <option *ngFor="let config of externalSystemConfigs" [value]="config.id">{{ config.name }}</option>
+          </select>
+        </div>
+
+        <!-- Funds -->
+        <div class="form-group">
+          <label>Funds:</label>
+          <div formArrayName="funds">
+            <div *ngFor="let fund of fundsArray.controls; let i = index" [formGroupName]="i" class="fund-row">
+              <div class="form-group">
+                <label for="fundName">Fund Name:</label>
+                <select id="fundName" formControlName="fundName">
+                  <option *ngFor="let fund of funds" [value]="fund.id">{{ fund.fundName }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fundAlias">Fund Alias:</label>
+                <select id="fundAlias" formControlName="fundAlias">
+                  <option *ngFor="let fund of funds" [value]="fund.id">{{ fund.fundAlias }}</option>
+                </select>
+              </div>
+              <button type="button" (click)="removeFund(i)" class="remove-btn">×</button>
+            </div>
+          </div>
+          <button type="button" (click)="addFund()" class="add-btn">+</button>
+        </div>
+
+        <!-- Trigger Checkboxes -->
+        <div class="form-group">
+          <label>Trigger:</label>
+          <div>
+            <input type="checkbox" formControlName="triggerSources" (change)="toggleFormVisibility('sources')"> Sources
+            <input type="checkbox" formControlName="triggerRuns" (change)="toggleFormVisibility('runs')"> Runs
+            <input type="checkbox" formControlName="triggerReports" (change)="toggleFormVisibility('reports')"> Reports
+          </div>
+        </div>
+
+        <!-- Conditional Forms -->
+        <div *ngIf="plannerForm.get('triggerSources').value">
+          <h3>Sources</h3>
+          <button (click)="addSource()" class="add-btn">+</button>
+          <div formArrayName="sources">
+            <div *ngFor="let source of sourcesArray.controls; let i = index" [formGroupName]="i" class="item-row">
+              <label for="sourceName">Source Name:</label>
+              <select id="sourceName" formControlName="sourceId">
+                <option *ngFor="let source of sources" [value]="source.id">{{ source.sourceName }}</option>
+              </select>
+              <button type="button" (click)="removeSource(i)" class="remove-btn">×</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="plannerForm.get('triggerRuns').value">
+          <h3>Runs</h3>
+          <button (click)="addRun()" class="add-btn">+</button>
+          <div formArrayName="runs">
+            <div *ngFor="let run of runsArray.controls; let i = index" [formGroupName]="i" class="item-row">
+              <label for="runName">Run Name:</label>
+              <select id="runName" formControlName="runId">
+                <option *ngFor="let run of runs" [value]="run.id">{{ run.runName }}</option>
+              </select>
+              <button type="button" (click)="removeRun(i)" class="remove-btn">×</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="plannerForm.get('triggerReports').value">
+          <h3>Reports</h3>
+          <button (click)="addReport()" class="add-btn">+</button>
+          <div formArrayName="reports">
+            <div *ngFor="let report of reportsArray.controls; let i = index" [formGroupName]="i" class="item-row">
+              <label for="reportName">Report Name:</label>
+              <select id="reportName" formControlName="reportId">
+                <option *ngFor="let report of reports" [value]="report.id">{{ report.reportName }}</option>
+              </select>
+              <label for="reportType">Report Type:</label>
+              <select id="reportType" formControlName="reportType">
+                <option *ngFor="let report of reports" [value]="type">{{ report.reportType }}</option>
+              </select>
+              <button type="button" (click)="removeReport(i)" class="remove-btn">×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+          <button type="submit" [disabled]="!plannerForm.valid">Submit</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

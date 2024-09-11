@@ -5,6 +5,7 @@ const sequelize = new Sequelize('postgres', 'postgres', 'password', {
   port: 5432
 });
 
+// Import models
 const ExternalSystem = require('./externalSystem.model')(sequelize, DataTypes);
 const Planner = require('./planner.model')(sequelize, DataTypes);
 const Fund = require('./fund.model')(sequelize, DataTypes);
@@ -16,6 +17,40 @@ const PlannerSources = require('./junctions/plannerSources.model')(sequelize, Da
 const PlannerRuns = require('./junctions/plannerRuns.model')(sequelize, DataTypes);
 const PlannerReports = require('./junctions/plannerReports.model')(sequelize, DataTypes);
 
+// Define associations
+ExternalSystem.hasMany(Planner, { foreignKey: 'externalSystemId', as: 'planners' });
+
+Planner.belongsTo(ExternalSystem, { foreignKey: 'externalSystemId', as: 'externalSystemConfig' });
+
+// Planner.belongsToMany(Fund, {
+//   through: PlannerFunds,
+//   foreignKey: 'plannerId',
+//   otherKey: 'fundId',
+//   as: 'funds'
+// });
+
+// Planner.belongsToMany(Source, {
+//   through: PlannerSources,
+//   foreignKey: 'plannerId',
+//   otherKey: 'sourceId',
+//   as: 'sources'
+// });
+
+// Planner.belongsToMany(Run, {
+//   through: PlannerRuns,
+//   foreignKey: 'plannerId',
+//   otherKey: 'runId',
+//   as: 'runs'
+// });
+
+// Planner.belongsToMany(Report, {
+//   through: PlannerReports,
+//   foreignKey: 'plannerId',
+//   otherKey: 'reportId',
+//   as: 'reports'
+// });
+
+// Export models and sequelize instance
 const db = {
   sequelize,
   Sequelize,

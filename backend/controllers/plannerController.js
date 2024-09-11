@@ -4,7 +4,16 @@ const { Planner, ExternalSystem, Fund, Source, Run, Report } = require('../model
 exports.getAll = async (req, res) => {
   try {
     const planners = await Planner.findAll({
-      include: [{ model: ExternalSystem }]
+      include: [
+        { model: ExternalSystem,
+          as: 'externalSystemConfig',
+          required: true
+        },
+        // { model: Fund, as: 'funds' },
+        // { model: Source, as: 'sources' },
+        // { model: Run, as: 'runs' },
+        // { model: Report, as: 'reports' }
+      ]
     });
     res.json(planners);
   } catch (error) {
@@ -16,7 +25,13 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
   try {
     const planner = await Planner.findByPk(req.params.id, {
-      include: [{ model: ExternalSystem }]
+      include: [
+        { model: ExternalSystem, as: 'externalSystemConfig' },
+        // { model: Fund, as: 'funds' },
+        // { model: Source, as: 'sources' },
+        // { model: Run, as: 'runs' },
+        // { model: Report, as: 'reports' }
+      ]
     });
     if (planner) {
       res.json(planner);

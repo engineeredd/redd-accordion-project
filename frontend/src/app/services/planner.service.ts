@@ -38,22 +38,22 @@ export class PlannerService {
 
 	// Get all funds
   getAllFunds(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiPlannersUrl}/funds`);
+    return this.http.get<any[]>(`${this.apiPlannersUrl}/dropdown/funds`);
   }
 
   // Get all sources
   getAllSources(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiPlannersUrl}/sources`);
+    return this.http.get<any[]>(`${this.apiPlannersUrl}/dropdown/sources`);
   }
 
   // Get all runs
   getAllRuns(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiPlannersUrl}/runs`);
+    return this.http.get<any[]>(`${this.apiPlannersUrl}/dropdown/runs`);
   }
 
   // Get all reports
   getAllReports(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiPlannersUrl}/reports`);
+    return this.http.get<any[]>(`${this.apiPlannersUrl}/dropdown/reports`);
   }
 
   // Fetch external system configs for dropdown

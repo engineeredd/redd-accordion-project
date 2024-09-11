@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { PlannerService } from '../../services/planner.service';
 import { CommonModule } from '@angular/common';
 
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './planner.component.html',
   styleUrls: ['./planner.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class PlannerComponent implements OnInit {
   plannerForm: FormGroup;
@@ -29,10 +29,13 @@ export class PlannerComponent implements OnInit {
     this.plannerForm = this.fb.group({
       name: ['', Validators.required],
       ownerName: ['', Validators.required],
-      status: ['', Validators.required],
+      status: [''],
       description: [''],
       plannerType: ['', Validators.required],
-      externalSystemConfigs: this.fb.array([]),
+      externalSystemConfigId: [null, Validators.required],
+      triggerSources: [false],
+      triggerRuns: [false],
+      triggerReports: [false],
       funds: this.fb.array([]),
       sources: this.fb.array([]),
       runs: this.fb.array([]),
@@ -92,96 +95,115 @@ export class PlannerComponent implements OnInit {
     this.expandedAccordionId = this.expandedAccordionId === plannerId ? null : plannerId;
   }
 
+  // Create New Planner
+  createNewPlanner() {
+    const newPlanner = {
+      id: Date.now(), // Temporary ID
+      name: '',
+      ownerName: '',
+      description: '',
+      status: '', // Placeholder status
+      plannerType: '',
+      externalSystemConfigId: null,
+      triggerSources: false,
+      triggerRuns: false,
+      triggerReports: false,
+      funds: [],
+      sources: [],
+      runs: [],
+      reports: []
+    };
+
+    this.planners.push(newPlanner);
+    this.filteredPlanners = [...this.planners]; // Refresh filtered planners
+    this.expandedAccordionId = newPlanner.id; // Automatically expand the new planner's accordion
+  }
+
   // Add External System Config
-  get externalSystemConfigsArray(): FormArray {
-    return this.plannerForm.get('externalSystemConfigs') as FormArray;
+  get externalSystemConfigId(): FormGroup {
+    return this.plannerForm.get('externalSystemConfigId') as FormGroup;
   }
 
-  addExternalSystemConfig() {
-    const externalConfigGroup = this.fb.group({
-      configName: ['', Validators.required],
-      configValue: ['', Validators.required]
-    });
-    this.externalSystemConfigsArray.push(externalConfigGroup);
-  }
-
-  removeExternalSystemConfig(index: number) {
-    this.externalSystemConfigsArray.removeAt(index);
-  }
-
-  // Add Fund
+  // Get Form Arrays
   get fundsArray(): FormArray {
     return this.plannerForm.get('funds') as FormArray;
   }
 
-  addFund() {
-    const fundGroup = this.fb.group({
-      fundName: ['', Validators.required],
-      fundAlias: ['', Validators.required]
-    });
-    this.fundsArray.push(fundGroup);
-  }
-
-  removeFund(index: number) {
-    this.fundsArray.removeAt(index);
-  }
-
-  // Add Source
   get sourcesArray(): FormArray {
     return this.plannerForm.get('sources') as FormArray;
   }
 
-  addSource() {
-    const sourceGroup = this.fb.group({
-      sourceName: ['', Validators.required]
-    });
-    this.sourcesArray.push(sourceGroup);
-  }
-
-  removeSource(index: number) {
-    this.sourcesArray.removeAt(index);
-  }
-
-  // Add Run
   get runsArray(): FormArray {
     return this.plannerForm.get('runs') as FormArray;
   }
 
-  addRun() {
-    const runGroup = this.fb.group({
-      runName: ['', Validators.required]
-    });
-    this.runsArray.push(runGroup);
-  }
-
-  removeRun(index: number) {
-    this.runsArray.removeAt(index);
-  }
-
-  // Add Report
   get reportsArray(): FormArray {
     return this.plannerForm.get('reports') as FormArray;
   }
 
-  addReport() {
-    const reportGroup = this.fb.group({
-      reportType: ['', Validators.required],
-      reportName: ['', Validators.required]
+  // Add Fund Method
+  createFund(): FormGroup {
+    return this.fb.group({
+      fundName: [''],
+      fundAlias: ['']
     });
-    this.reportsArray.push(reportGroup);
   }
 
-  removeReport(index: number) {
+  addFund(): void {
+    this.fundsArray.push(this.createFund());
+  }
+
+  removeFund(index: number): void {
+    this.fundsArray.removeAt(index);
+  }
+
+  // Add Source Method
+  addSource() {
+    const source = this.fb.group({
+      sourceName: ['']
+    });
+    this.sourcesArray.push(source);
+  }
+
+  // Add Run Method
+  addRun() {
+    const run = this.fb.group({
+      runName: ['']
+    });
+    this.runsArray.push(run);
+  }
+
+  // Add Report Method
+  addReport() {
+    const report = this.fb.group({
+      reportName: [''],
+      reportType: ['']
+    });
+    this.reportsArray.push(report);
+  }
+
+  removeSource(index: number): void {
+    this.sourcesArray.removeAt(index);
+  }
+  
+  removeRun(index: number): void {
+    this.runsArray.removeAt(index);
+  }
+  
+  removeReport(index: number): void {
     this.reportsArray.removeAt(index);
   }
-
+  
   // Delete planner
   delete(plannerId: number) {
     if (confirm('Are you sure you want to delete this planner?')) {
+      // Remove the accordion immediately
+      this.planners = this.planners.filter(planner => planner.id !== plannerId);
+      this.filteredPlanners = this.planners; // Refresh filtered planners
+      this.expandedAccordionId = null; // Collapse the accordion
+
       this.plannerService.deletePlanner(plannerId).subscribe({
         next: () => {
-          this.planners = this.planners.filter(planner => planner.id !== plannerId);
-          this.filteredPlanners = this.planners; // Refresh filtered planners
           console.log('Planner deleted successfully');
         },
         error: (error) => {

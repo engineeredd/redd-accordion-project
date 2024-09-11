@@ -1,44 +1,110 @@
-.container {
-	width: 80%;
-	margin: 0 auto;
-	padding: 20px;
+.planner-container {
+  padding: 20px;
+  max-height: 90vh; /* Ensure the container fits within the viewport */
+  overflow-y: auto; /* Make the container scrollable */
+  background-color: #f9f9f9;
 }
 
-.header {
-	text-align: center;
-	margin-bottom: 20px;
+.search-bar {
+  margin-bottom: 20px;
+}
+
+.create-btn {
+  display: block;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-btn:hover {
+  background-color: #0056b3;
+}
+
+.accordion {
+  margin-bottom: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.accordion-header {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-body {
+  padding: 10px;
+}
+
+.delete-btn {
+  background: #dc3545;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
+.add-btn, .remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+  color: #007bff;
+  margin-left: 10px;
+}
+
+.add-btn:hover, .remove-btn:hover {
+  color: #0056b3;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.fund-row, .item-row {
+  margin-bottom: 10px;
 }
 
 .form-group {
-	margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
-.btn {
-	margin-top: 10px;
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
-.fund-group, .source-group, .run-group, .report-group {
-	margin-bottom: 15px;
-	border: 1px solid #ddd;
-	padding: 10px;
-	border-radius: 5px;
+button[type="submit"] {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.fund-group label, .source-group label, .run-group label, .report-group label {
-	margin-right: 10px;
+button[type="submit"]:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
-
-.btn-primary {
-	background-color: #007bff;
-	color: white;
-}
-
-.btn-success {
-	background-color: #28a745;
-	color: white;
-}
-
-.btn-secondary {
-	background-color: #6c757d;
-	color: white;
-} 

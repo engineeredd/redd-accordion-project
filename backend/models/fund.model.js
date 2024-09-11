@@ -4,5 +4,14 @@ module.exports = (sequelize, DataTypes) => {
 		fundAlias: { type: DataTypes.STRING, allowNull: false }
 	});
 
+	Fund.associate = function(models) {
+		Fund.hasMany(models.Planner, {
+      through: 'PlannerFunds',
+      foreignKey: 'fundId',
+      otherKey: 'plannerId', 
+      as: 'planners'
+    });
+	};
+
 	return Fund;
 };
